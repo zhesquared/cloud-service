@@ -20,8 +20,8 @@ services:
       - cloud-net
     environment:
       MYSQL_DATABASE: cloud_service
-      MYSQL_USER: bestuser
-      MYSQL_PASSWORD: bestuser
+      MYSQL_USER: default
+      MYSQL_PASSWORD: default
       MYSQL_ROOT_PASSWORD: root
 networks:
   cloud-net:
