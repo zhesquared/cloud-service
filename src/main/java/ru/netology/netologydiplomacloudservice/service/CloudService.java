@@ -19,6 +19,7 @@ import ru.netology.netologydiplomacloudservice.repository.FileRepository;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -44,17 +45,19 @@ public class CloudService {
 
             File uploadedFile = createFileInfo(filename, file);
 
-            log.info("Загружаем файл {} в облако", filename);
-            try {
-                fileManager.uploadFile(file.getBytes(), uploadedFile.getHash(), filename);
-            } catch (IOException e) {
-                log.error("Не удалось загрузить файл\n" + e.getMessage());
-            }
-            log.info("Файл {} успешно загружен", filename);
-
             log.info("Сохраняем данные файла {} в базу данных", filename);
             fileRepository.save(uploadedFile);
             log.info("Информация о файле {} сохранена", filename);
+
+            log.info("Загружаем файл {} в облако", filename);
+            try {
+                fileManager.uploadFile(file.getBytes(), uploadedFile.getHash(), filename);
+            } catch (IOException ex) {
+                fileRepository.delete(uploadedFile);
+                log.error("Очищаем данные о файле {} из базы данных", filename);
+                throw new FileProcessingException(ex.getMessage());
+            }
+            log.info("Файл {} успешно загружен", filename);
 
         } catch (IOException ex) {
             throw new FileProcessingException(ex.getMessage());
