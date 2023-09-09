@@ -45,7 +45,11 @@ public class CloudService {
             File uploadedFile = createFileInfo(filename, file);
 
             log.info("Загружаем файл {} в облако", filename);
-            fileManager.uploadFile(file.getBytes(), uploadedFile.getHash(), filename);
+            try {
+                fileManager.uploadFile(file.getBytes(), uploadedFile.getHash(), filename);
+            } catch (IOException e) {
+                log.error("Не удалось загрузить файл\n" + e.getMessage());
+            }
             log.info("Файл {} успешно загружен", filename);
 
             log.info("Сохраняем данные файла {} в базу данных", filename);
